@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Desert City | Mohamed El Hefnawy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass-bg: rgba(20, 20, 20, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --title-color: #ffffff;
+            --subtitle-color: #EAB308;
+            --glow-yellow: rgba(234, 179, 8, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: #000;
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 80px;
+        }
+
+        /* Scrolling Grid Layer */
+        .grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: calc(100vh + 100px); 
+            background-size: 60px 60px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.35) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.35) 1px, transparent 1px);
+            filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.7)) blur(0.4px);
+            animation: scrollUp 1.5s linear infinite;
+            transform: translateZ(0);
+            will-change: transform;
+            z-index: 0;
+        }
+
+        @keyframes scrollUp {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-60px); }
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.85) 100%);
+            z-index: 1;
+        }
+
+        /* Floating Back to Home Button (Top Left) */
+        .btn-floating-back {
+            position: fixed;
+            top: 40px;
+            left: 40px;
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: #fff;
+            text-decoration: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(250, 204, 21, 0.05);
+            z-index: 100;
+        }
+
+        .btn-floating-back:hover {
+            background: #FACC15;
+            color: #000;
+            border-color: #FACC15;
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(250, 204, 21, 0.6);
+        }
+
+        /* Content Page Container */
+        .content-container {
+            position: relative;
+            z-index: 5;
+            width: 90%;
+            max-width: 1000px;
+            margin: 80px auto 80px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Banner Image */
+        .project-banner-wrapper {
+            width: 100%;
+            height: 420px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .project-banner {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Header Info Row */
+        .project-header-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 24px;
+        }
+
+        .project-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .project-date {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #FACC15;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .project-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #10B981;
+            text-transform: uppercase;
+        }
+
+        .status-pulse-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #10B981;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
+            animation: emeraldPulse 2s infinite;
+        }
+
+        @keyframes emeraldPulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 8px rgba(16, 185, 129, 0.8); }
+            50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 15px rgba(16, 185, 129, 1); }
+        }
+
+        .project-main-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+
+        /* Detailed Description Sections */
+        .project-details-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+        }
+
+        .details-left {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .details-section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+            border-left: 3px solid #FACC15;
+            padding-left: 12px;
+        }
+
+        .details-text {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 15px;
+        }
+
+        .details-list {
+            margin-left: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.05rem;
+        }
+
+        .details-list li strong {
+            color: #FACC15;
+        }
+
+        .details-right {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .sidebar-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 24px;
+        }
+
+        .sidebar-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tech-stack-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            list-style: none;
+        }
+
+        .tech-stack-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .tech-badge {
+            background: rgba(250, 204, 21, 0.1);
+            border: 1px solid rgba(250, 204, 21, 0.2);
+            color: #FACC15;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* ==========================================
+           PROFESSIONAL RESPONSIVE BREAKPOINTS 
+           ========================================== */
+
+        /* Prevent horizontal scroll globally on html and body */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        /* 1. TABLET BREAKPOINT (481px to 768px) & MOBILE (320px to 480px) */
+        @media (max-width: 768px) {
+            .grid, .vignette {
+                width: 100%;
+            }
+
+            .btn-floating-back {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                padding: 10px 20px;
+                font-size: 0.85rem;
+            }
+
+            .content-container {
+                padding: 24px;
+                margin-top: 100px;
+                margin-bottom: 40px;
+                width: 92%;
+                border-radius: 24px;
+                gap: 24px;
+            }
+
+            .project-banner-wrapper {
+                height: 240px;
+                border-radius: 16px;
+            }
+
+            .project-main-title {
+                font-size: 1.8rem;
+            }
+
+            .project-details-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .details-left {
+                gap: 20px;
+            }
+
+            .sidebar-card {
+                padding: 20px;
+                border-radius: 16px;
+            }
+        }
+
+        /* 2. MOBILE SPECIFIC BREAKPOINT (320px to 480px) */
+        @media (max-width: 480px) {
+            .btn-floating-back {
+                top: 15px;
+                left: 15px;
+                padding: 8px 16px;
+                font-size: 0.8rem;
+                gap: 6px;
+            }
+
+            .content-container {
+                padding: 20px 16px;
+                margin-top: 80px;
+                margin-bottom: 30px;
+                width: 94%;
+                border-radius: 20px;
+                gap: 20px;
+            }
+
+            .project-banner-wrapper {
+                height: 160px;
+                border-radius: 12px;
+            }
+
+            .project-main-title {
+                font-size: 1.5rem;
+            }
+
+            .project-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .details-section-title {
+                font-size: 1.2rem;
+                margin-bottom: 8px;
+            }
+
+            .details-text, .details-list {
+                font-size: 0.95rem;
+                line-height: 1.6;
+            }
+
+            .sidebar-card {
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            .sidebar-title {
+                font-size: 1rem;
+                margin-bottom: 12px;
+            }
+
+            .tech-stack-item {
+                font-size: 0.85rem;
+            }
+
+            .tech-badge {
+                font-size: 0.75rem;
+                padding: 2px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid"></div>
+    <div class="vignette"></div>
+
+
+
+    <!-- Main Project Content -->
+    <main class="content-container">
+        <div class="project-banner-wrapper">
+            <img src="city.png" alt="Smart Desert City Banner" class="project-banner">
+        </div>
+
+        <div class="project-header-info">
+            <div class="project-meta">
+                <span class="project-date">Oct 2025</span>
+                <span class="project-status">
+                    <span class="status-pulse-dot"></span>
+                    COMPLETE
+                </span>
+            </div>
+            <h1 class="project-main-title">Smart Desert City</h1>
+        </div>
+
+        <div class="project-details-grid">
+            <div class="details-left">
+                <div>
+                    <h2 class="details-section-title">Project Overview</h2>
+                    <p class="details-text">
+                        The Smart Desert City project is a revolutionary automation concept designed to engineer sustainable, self-sufficient human settlements in extreme desert environments. By deploying advanced embedded IoT controllers and smart electrical systems, this project models an optimized urban center capable of producing power and managing critical natural resources efficiently.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="details-section-title">Key Core Systems</h2>
+                    <ul class="details-list">
+                        <li><strong>Smart Irrigation Network:</strong> Automated water distribution system controlled by custom soil humidity, thermal, and vapor sensors, reducing agricultural water loss in dry soil by up to 40%.</li>
+                        <li><strong>Dual-Axis Solar Tracker:</strong> Dynamic grid tracking solar arrays configured with microcontrollers to track the sun path in real-time, boosting overall PV panel yield by 35%.</li>
+                        <li><strong>Microgrid Energy Storage:</strong> An automated battery energy management system (BEMS) to balance load fluctuations and manage storage during peak heat periods.</li>
+                        <li><strong>IoT Environmental Telemetry:</strong> Wireless sensors reporting meteorological indicators (wind velocity, heat index, and relative humidity) to an central database.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h2 class="details-section-title">Automation & Engineering Focus</h2>
+                    <p class="details-text">
+                        Our research focuses on reliable loop closed control systems capable of operating without external inputs. We utilize robust industrial PLC architectures, embedded microcontrollers, and custom control code to prevent system failures due to high ambient dust and extreme temperatures.
+                    </p>
+                </div>
+            </div>
+
+            <div class="details-right">
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">Project Specs</h3>
+                    <ul class="tech-stack-list">
+                        <li class="tech-stack-item">Status <span class="tech-badge" style="color: #10B981; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2);">COMPLETE</span></li>
+                        <li class="tech-stack-item">Completed <span class="tech-badge">Oct 2025</span></li>
+                        <li class="tech-stack-item">Category <span class="tech-badge">Smart Grid</span></li>
+                        <li class="tech-stack-item">Sensors <span class="tech-badge">IoT / Analog</span></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">Tech Stack</h3>
+                    <ul class="tech-stack-list">
+                        <li class="tech-stack-item">Microcontrollers <span class="tech-badge">ESP32 / Arduino</span></li>
+                        <li class="tech-stack-item">Communication <span class="tech-badge">LoRa / WiFi</span></li>
+                        <li class="tech-stack-item">Programming <span class="tech-badge">C++ / Python</span></li>
+                        <li class="tech-stack-item">Power Control <span class="tech-badge">MOSFET Arrays</span></li>
+                        <li class="tech-stack-item">Simulation <span class="tech-badge">Proteus</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Back to Home Button -->
+    <a href="index.html#projects" class="btn-floating-back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Home
+    </a>
+</body>
+</html>
